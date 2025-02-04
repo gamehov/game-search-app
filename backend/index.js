@@ -10,12 +10,20 @@ app.use(express.json());
 
 const CHEAPSHARK_API_KEY = "417644db3fmsh63816b90aa904cbp10d6f8jsn7ad9f97e626b";
 
+// In-memory cache
+const cache = {};
+
 // Proxy endpoint for searching games
 app.get("/api/search", async (req, res) => {
   const { query } = req.query;
 
   if (!query) {
     return res.status(400).json({ error: "Query parameter is required" });
+  }
+
+  // Check cache first
+  if (cache[query]) {
+    return res.json(cache[query]);
   }
 
   try {
@@ -28,6 +36,10 @@ app.get("/api/search", async (req, res) => {
         },
       }
     );
+
+    // Save results to cache
+    cache[query] = response.data;
+
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching games from CheapShark:", error);
