@@ -1,86 +1,69 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const GameDetails = ({ game }) => {
-  const [priceHistory, setPriceHistory] = useState([]);
+  const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPriceHistory = async () => {
+    const fetchDeals = async () => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/game/${game.gameID}`
         );
         console.log("API Response:", response.data); // Debugging log
-        setPriceHistory(response.data.deals);
+        setDeals(response.data.deals);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching price history:", error);
+        console.error("Error fetching deals:", error);
         setLoading(false);
       }
     };
 
-    fetchPriceHistory();
+    fetchDeals();
   }, [game]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // Debugging log for price history data
-  console.log("Price History:", priceHistory);
-
-  // Format data for the chart
-  const chartData = {
-    labels: priceHistory.map((deal) => {
-      const date = new Date(deal.date * 1000);
-      console.log("Raw Date:", deal.date, "Formatted Date:", date.toLocaleDateString()); // Debugging log
-      return date.toLocaleDateString();
-    }),
-    datasets: [
-      {
-        label: "Price History",
-        data: priceHistory.map((deal) => deal.price),
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        fill: true,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Price History",
-      },
-    },
-  };
-
   return (
     <div className="game-details">
       <h2>{game.external}</h2>
-      <p>ATL: ${Math.min(...priceHistory.map((deal) => parseFloat(deal.price))).toFixed(2)}</p>
-      <p>ATH: ${Math.max(...priceHistory.map((deal) => parseFloat(deal.price))).toFixed(2)}</p>
-      <div className="chart">
-        <Line data={chartData} options={chartOptions} />
-      </div>
-      <a
-        href={`https://www.cheapshark.com/redirect?dealID=${game.cheapestDealID}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        View Deal
-      </a>
+      <p>ATL: ${Math.min(...deals.map((deal) => parseFloat(deal.price))).toFixed(2)}</p>
+      <p>ATH: ${Math.max(...deals.map((deal) => parseFloat(deal.price))).toFixed(2)}</p>
+
+      <h3>Current Deals</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Store</th>
+            <th>Price</th>
+            <th>Retail Price</th>
+            <th>Savings</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          {deals.map((deal) => (
+            <tr key={deal.dealID}>
+              <td>Store {deal.storeID}</td>
+              <td>${deal.price}</td>
+              <td>${deal.retailPrice}</td>
+              <td>{parseFloat(deal.savings).toFixed(2)}%</td>
+              <td>
+                <a
+                  href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Deal
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
