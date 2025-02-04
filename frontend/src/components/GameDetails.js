@@ -16,6 +16,7 @@ const GameDetails = ({ game }) => {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/game/${game.gameID}`
         );
+        console.log("API Response:", response.data); // Debugging log
         setPriceHistory(response.data.deals);
         setLoading(false);
       } catch (error) {
@@ -31,9 +32,16 @@ const GameDetails = ({ game }) => {
     return <div>Loading...</div>;
   }
 
+  // Debugging log for price history data
+  console.log("Price History:", priceHistory);
+
   // Format data for the chart
   const chartData = {
-    labels: priceHistory.map((deal) => new Date(deal.date * 1000).toLocaleDateString()),
+    labels: priceHistory.map((deal) => {
+      const date = new Date(deal.date * 1000);
+      console.log("Raw Date:", deal.date, "Formatted Date:", date.toLocaleDateString()); // Debugging log
+      return date.toLocaleDateString();
+    }),
     datasets: [
       {
         label: "Price History",
