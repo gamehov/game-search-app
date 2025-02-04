@@ -127,3 +127,9 @@ td a:hover {
   border-radius: 4px;
   object-fit: cover; /* Ensure the image fits nicely */
 }
+
+.error-message {
+  color: #dc3545; /* Red color for errors */
+  margin-top: 10px;
+  font-size: 14px;
+}
