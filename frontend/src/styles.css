@@ -81,3 +81,49 @@ td a {
 td a:hover {
   background-color: #0056b3;
 }
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 300px; /* Increased height to accommodate thumbnails */
+  overflow-y: auto;
+  margin-top: 10px;
+  background-color: #fff;
+  position: absolute;
+  width: 100%;
+  z-index: 1000; /* Ensure the dropdown appears above other content */
+}
+
+.search-results li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.search-results li:hover {
+  background-color: #f0f0f0;
+}
+
+.game-thumbnail {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 4px;
+  object-fit: cover; /* Ensure the image fits nicely */
+}
