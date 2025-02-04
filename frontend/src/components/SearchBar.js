@@ -8,7 +8,7 @@ const SearchBar = ({ onGameSelect }) => {
   const handleSearch = async (e) => {
     const searchQuery = e.target.value;
     setQuery(searchQuery);
-  
+
     if (searchQuery.length > 2) {
       try {
         const response = await axios.get(
@@ -35,7 +35,12 @@ const SearchBar = ({ onGameSelect }) => {
         <ul className="search-results">
           {results.map((game) => (
             <li key={game.gameID} onClick={() => onGameSelect(game)}>
-              {game.external}
+              <img
+                src={game.thumb}
+                alt={game.external}
+                className="game-thumbnail"
+              />
+              <span>{game.external}</span>
             </li>
           ))}
         </ul>
