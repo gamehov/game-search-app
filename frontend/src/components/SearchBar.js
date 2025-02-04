@@ -8,7 +8,7 @@ const SearchBar = ({ onGameSelect }) => {
   const handleSearch = async (e) => {
     const searchQuery = e.target.value;
     setQuery(searchQuery);
-
+  
     if (searchQuery.length > 2) {
       try {
         const response = await axios.get(
