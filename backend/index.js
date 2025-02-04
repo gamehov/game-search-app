@@ -13,6 +13,11 @@ const CHEAPSHARK_API_KEY = "417644db3fmsh63816b90aa904cbp10d6f8jsn7ad9f97e626b";
 // Proxy endpoint for searching games
 app.get("/api/search", async (req, res) => {
   const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ error: "Query parameter is required" });
+  }
+
   try {
     const response = await axios.get(
       `https://www.cheapshark.com/api/1.0/games?title=${query}&limit=5`,
@@ -25,14 +30,19 @@ app.get("/api/search", async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    console.error("Error fetching games:", error);
-    res.status(500).json({ error: "Failed to fetch games" });
+    console.error("Error fetching games from CheapShark:", error);
+    res.status(500).json({ error: "Failed to fetch games from CheapShark" });
   }
 });
 
 // Proxy endpoint for fetching game details
 app.get("/api/game/:id", async (req, res) => {
   const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "Game ID is required" });
+  }
+
   try {
     const response = await axios.get(
       `https://www.cheapshark.com/api/1.0/games?id=${id}`,
@@ -45,8 +55,8 @@ app.get("/api/game/:id", async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    console.error("Error fetching game details:", error);
-    res.status(500).json({ error: "Failed to fetch game details" });
+    console.error("Error fetching game details from CheapShark:", error);
+    res.status(500).json({ error: "Failed to fetch game details from CheapShark" });
   }
 });
 
