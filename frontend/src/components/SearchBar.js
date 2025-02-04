@@ -5,7 +5,17 @@ const SearchBar = ({ onGameSelect }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
-  const [cache, setCache] = useState({}); // Cache for search results
+
+  // Get cached results from localStorage
+  const getCachedResults = (query) => {
+    const cachedData = localStorage.getItem(`search_${query}`);
+    return cachedData ? JSON.parse(cachedData) : null;
+  };
+
+  // Save results to localStorage
+  const saveCachedResults = (query, data) => {
+    localStorage.setItem(`search_${query}`, JSON.stringify(data));
+  };
 
   // Debounce the search input
   useEffect(() => {
@@ -15,8 +25,9 @@ const SearchBar = ({ onGameSelect }) => {
     }
 
     // Check cache first
-    if (cache[query]) {
-      setResults(cache[query]);
+    const cachedResults = getCachedResults(query);
+    if (cachedResults) {
+      setResults(cachedResults);
       return;
     }
 
@@ -28,11 +39,8 @@ const SearchBar = ({ onGameSelect }) => {
         setResults(response.data);
         setError(null); // Clear any previous errors
 
-        // Update cache
-        setCache((prevCache) => ({
-          ...prevCache,
-          [query]: response.data,
-        }));
+        // Save results to cache
+        saveCachedResults(query, response.data);
       } catch (error) {
         console.error("Error fetching games:", error);
         if (error.response) {
@@ -50,7 +58,7 @@ const SearchBar = ({ onGameSelect }) => {
     }, 300); // 300ms delay
 
     return () => clearTimeout(delayDebounceFn);
-  }, [query, cache]);
+  }, [query]);
 
   return (
     <div className="search-bar">
